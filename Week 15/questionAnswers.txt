@@ -1,0 +1,278 @@
+1- Validate Binary Search Tree
+
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    
+    public boolean isValidBST(TreeNode root) {
+        return helper(root, null, null);
+    }
+    
+    
+    public boolean helper(TreeNode curr, TreeNode lowerBound, TreeNode upperBound){
+        if (curr == null) return true;
+        if (lowerBound != null && curr.val <= lowerBound.val) return false;
+        if (upperBound != null && curr.val >= upperBound.val) return false;
+        return helper(curr.left, lowerBound, curr) && helper(curr.right, curr, upperBound);
+    }
+    
+       
+    
+    
+}
+
+
+
+
+
+
+2- Kth Smallest Element in a BST
+
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    ArrayList<Integer> arr = new ArrayList<>();
+    public int kthSmallest(TreeNode root, int k) {
+        inOrder(root, k);
+        return arr.get(k - 1);
+    }
+    
+    public void inOrder(TreeNode root, int k){
+        if (root == null) return;
+        if (arr.size() == k) return;
+        inOrder(root.left, k);
+        arr.add(root.val);
+        inOrder(root.right, k);
+    }
+    
+}
+
+
+
+
+3- Lowest Common Ancestor of BST
+
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+class Solution {
+    
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        return helper(root, p, q);
+    }
+    
+    public TreeNode helper(TreeNode curr, TreeNode p, TreeNode q){
+        if (curr == null) return null;
+        if (p.val > curr.val && q.val > curr.val){
+            return helper(curr.right, p, q);
+        }
+        else if (p.val < curr.val && q.val < curr.val){
+            return helper(curr.left, p, q);
+        }
+        return curr;
+    }
+    
+    
+    
+    
+    
+    
+}
+
+
+
+
+
+4- Implement Trie (Prefix Tree)
+
+
+
+
+
+
+class Trie {
+    Node head;
+
+    public Trie() {
+        head = new Node();
+    }
+    
+    public void insert(String word) {
+        Node curr = head;
+        for (int i = 0; i < word.length(); i++){
+            if (curr.neighs.containsKey(word.charAt(i))){
+                curr = curr.neighs.get(word.charAt(i));
+            }
+            else {
+                Node newNode = new Node(word.charAt(i));
+                curr.neighs.put(word.charAt(i), newNode);
+                curr = newNode;
+            }
+        }
+        curr.isEnd = true;
+    }
+    
+    public boolean search(String word) {
+        Node curr = head;
+        for (int i = 0; i < word.length(); i++){
+            if (!curr.neighs.containsKey(word.charAt(i))) return false;
+            curr = curr.neighs.get(word.charAt(i));
+        }
+        return curr.isEnd;
+    }
+    
+    public boolean startsWith(String prefix) {
+        Node curr = head;
+        for (int i = 0; i < prefix.length(); i++){
+            if (!curr.neighs.containsKey(prefix.charAt(i))) return false;
+            curr = curr.neighs.get(prefix.charAt(i));
+        }
+        return true;
+    }
+    
+    
+    class Node {
+        HashMap<Character, Node> neighs;
+        Character val;
+        boolean isEnd = false;
+
+        public Node(){
+            neighs = new HashMap<>();
+        }
+
+        public Node(Character val){
+            neighs = new HashMap<>();
+            this.val = val;
+        }
+        
+    }
+    
+}
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie obj = new Trie();
+ * obj.insert(word);
+ * boolean param_2 = obj.search(word);
+ * boolean param_3 = obj.startsWith(prefix);
+ */
+
+
+
+
+5- Add and Search Word
+
+
+
+
+
+class TrieNode {
+    Map<Character, TrieNode> children = new HashMap();
+    boolean word = false;
+    public TrieNode() {}
+}
+
+class WordDictionary {
+    TrieNode trie;
+
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        trie = new TrieNode();
+    }
+
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        TrieNode node = trie;
+
+        for (char ch : word.toCharArray()) {
+            if (!node.children.containsKey(ch)) {
+                node.children.put(ch, new TrieNode());
+            }
+            node = node.children.get(ch);
+        }
+        node.word = true;
+    }
+
+    /** Returns if the word is in the node. */
+    public boolean searchInNode(String word, TrieNode node) {
+        for (int i = 0; i < word.length(); ++i) {
+            char ch = word.charAt(i);
+            if (!node.children.containsKey(ch)) {
+                // if the current character is '.'
+                // check all possible nodes at this level
+                if (ch == '.') {
+                    for (char x : node.children.keySet()) {
+                        TrieNode child = node.children.get(x);
+                        if (searchInNode(word.substring(i + 1), child)) {
+                            return true;
+                        }
+                    }
+                }
+                // if no nodes lead to answer
+                // or the current character != '.'
+                return false;
+            } else {
+                // if the character is found
+                // go down to the next level in trie
+                node = node.children.get(ch);
+            }
+        }
+        return node.word;
+    }
+
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return searchInNode(word, trie);
+    }
+}
+
+
+

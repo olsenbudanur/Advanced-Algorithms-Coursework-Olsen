@@ -1,0 +1,165 @@
+1- Coin Change
+
+
+
+
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 0;
+        
+        for (int i = 1; i < dp.length; i++){
+            dp[i] = amount+1;
+        }
+        
+        for (int i = 1; i <= amount; i++){
+            for (int j = 0; j < coins.length; j++){
+                int coin = coins[j];
+                if (i - coin >= 0){
+                    dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
+                }
+            }
+        }
+        
+        return dp[amount] == (amount + 1) ? -1 : dp[amount];
+        
+    }
+}
+
+
+2- Longest Increasing Subsequence
+
+
+
+
+
+
+
+
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        
+        int max = 1;
+        
+        for (int i = 1; i < nums.length; i++){
+            int curr = nums[i];
+            for (int j = i - 1; j >= 0; j--){
+                int prev = nums[j];
+                if (curr > prev){
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        
+        
+        
+        return max;
+    }
+}
+
+
+
+
+
+
+3- Longest Common Subsequence
+
+
+
+
+
+
+
+
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int[][] dp = new int[text1.length() + 1][text2.length() + 1];
+        
+        
+        for (int i = 1; i <= text1.length(); i++){
+            for (int j = 1; j <= text2.length(); j++){
+                int col = i - 1;
+                int row = j - 1;
+                if (text1.charAt(col) == text2.charAt(row)){
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                }
+                else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        
+        return dp[text1.length()][text2.length()];
+    }
+}
+
+
+
+
+
+4- Word Break Problem
+
+
+
+
+
+
+
+public class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> wordDictSet = new HashSet<>(wordDict);
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && wordDictSet.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+}
+
+
+
+
+
+
+5- Combination Sum
+
+
+
+
+
+
+class Solution {
+    public int combinationSum4(int[] nums, int target) {
+        HashMap<Integer, Integer> dp = new HashMap<>();
+        return helper(nums, target, dp);
+    }
+    
+    public int helper(int[] nums, int remain, HashMap<Integer, Integer> dp){
+        if (dp.containsKey(remain)) return dp.get(remain);
+        if (remain < 0) return 0;
+        if (remain == 0) return 1;
+        
+        int answ = 0;
+        
+        for (int i = 0; i < nums.length; i++){
+            answ += helper(nums, remain - nums[i], dp);
+        }
+        
+        dp.put(remain, answ);
+        
+        return answ;
+    }
+    
+}
+
+
+

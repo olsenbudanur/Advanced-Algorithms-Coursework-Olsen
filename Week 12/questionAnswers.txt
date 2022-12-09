@@ -1,0 +1,249 @@
+1- Non-overlapping Intervals
+
+
+
+
+
+class Solution {
+    public int eraseOverlapIntervals(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        int count = 0;
+        int[] prev = intervals[0];
+        
+        
+        for (int i = 1; i < intervals.length; i++){
+            int[] curr = intervals[i];
+            if (prev[0] >= curr[1]){
+                prev = curr;
+            }
+            else if (prev[1] <= curr[0]){
+                prev = curr;
+            }
+            else {
+                count++;
+                if (curr[1] < prev[1]){
+                    prev = curr;
+                }
+            }
+        }
+        
+        return count;
+    }
+}
+
+
+
+
+
+2- Meeting Rooms (Leetcode Premium)
+
+
+
+
+
+
+
+class Solution {
+    public boolean canAttendMeetings(int[][] intervals) {
+        if (intervals.length == 1 || intervals.length == 0) return true;
+        
+        
+        Arrays.sort(intervals, (a,b) -> Integer.compare(a[0], b[0]));
+        
+        int[] prev = intervals[0];
+        
+        for (int i = 1; i < intervals.length; i++){
+            int[] curr = intervals[i];
+            if (!(prev[0] >= curr[1] || prev[1] <= curr[0])){
+                return false;
+            }
+            prev = curr;
+        }
+        
+        
+        return true;
+    }
+}
+
+
+
+
+3- Meeting Rooms II (Leetcode Premium)
+
+
+
+
+
+
+
+
+class Solution {
+    public int minMeetingRooms(int[][] intervals) {
+        //
+        // The maximum number of collisions in
+        // one period.
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        int last = 0;
+        for (int i = 0; i < intervals.length; i++){
+            last = Math.max(last, intervals[i][1]);
+        }
+        
+        int[] meetings = new int[last + 1];
+        
+        
+        for (int i = 0; i < intervals.length; i++){
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+            
+            meetings[start]++;
+            meetings[end]--;
+        }
+        
+        int max = 0;
+        int curr = 0;
+        
+        for (int i = 0; i < meetings.length; i++){
+            curr += meetings[i];
+            max = Math.max(max, curr);
+        }
+        
+        
+        return max;
+    }
+}
+
+
+
+
+4- Set Matrix Zeroes
+
+
+
+
+
+
+
+
+
+class Solution {
+  public void setZeroes(int[][] matrix) {
+      //
+      // Keep track of cols and rows that need to be reset.
+      ArrayList<Integer> rows = new ArrayList<>();
+      ArrayList<Integer> cols = new ArrayList<>();
+      
+      
+      //
+      // Find the zeros, and mark the cols and rows.
+      for (int i = 0; i < matrix.length; i++){
+          for (int j = 0; j < matrix[0].length; j++){
+              if (matrix[i][j] == 0){
+                  rows.add(i);
+                  cols.add(j);
+              }
+          }
+      }
+      
+      //
+      // Loop thru list and reset what needs to be reset.
+      for (Integer row : rows){
+          rowZero(row, matrix);
+      }
+      
+      for (Integer col : cols){
+          colZero(col, matrix);
+      }
+      
+      
+      
+  }
+    
+    
+    public void rowZero(Integer row, int[][] matrix){
+        for (int j = 0; j < matrix[row].length; j++){
+            matrix[row][j] = 0;
+        }
+    }
+    
+    public void colZero(Integer col, int[][] matrix){
+        for (int i = 0; i < matrix.length; i++){
+            matrix[i][col] = 0;
+        }
+    }
+    
+    
+}
+
+
+
+
+
+
+5- Spiral Matrix
+
+
+
+
+
+
+public class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> answ = new ArrayList<>();
+        
+        int top = 0;
+        int bottom = matrix.length - 1;
+        
+        int left = 0;
+        int right = matrix[0].length - 1;
+        
+        int size = matrix.length * matrix[0].length;
+        
+        while (answ.size() != size){
+            
+            //
+            // Top edge
+            for (int i = left; i <= right; i++){
+                if (answ.size() == size) break;
+                answ.add(matrix[top][i]);
+            }
+            top++;
+            
+            //
+            // Right edge
+            for (int i = top; i <= bottom; i++){
+                if (answ.size() == size) break;
+                answ.add(matrix[i][right]);
+            }
+            right--;
+            
+            //
+            // Bottom edge
+            for (int i = right; i >= left ; i--){
+                if (answ.size() == size) break;
+                answ.add(matrix[bottom][i]);
+            }
+            bottom--;
+            
+            
+            //
+            // Left edge
+            for (int i = bottom; i >= top; i--){
+                if (answ.size() == size) break;
+                answ.add(matrix[i][left]);
+            }
+            left++;
+            
+        }
+        
+        
+        
+        return answ;
+        
+    }
+}
+
+
+
+

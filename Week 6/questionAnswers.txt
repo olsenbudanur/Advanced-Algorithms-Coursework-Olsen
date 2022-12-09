@@ -1,0 +1,252 @@
+1- Reverse a Linked List
+
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        if (head == null) return head;
+        ListNode curr = head;
+        ListNode next = head.next;
+        
+        //
+        // Curr head will be last...
+        head.next = null;
+        
+        while (next != null){
+            ListNode temp = next.next;
+            next.next = curr;
+            curr = next;
+            next = temp;
+        }
+        
+        
+        return curr;
+    }
+}
+
+
+2- Detect Cycle in a Linked List
+
+
+
+
+
+
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        ListNode turtle = head;
+        ListNode rabbit = head;
+        
+        while (rabbit != null && rabbit.next != null){
+            turtle = turtle.next;
+            rabbit = rabbit.next.next;
+            if (rabbit == turtle) {
+                return true;
+            }
+        }
+        return false;
+        
+    }
+}
+
+
+
+
+
+3- Merge Two Sorted Lists
+
+
+
+
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(1);
+        ListNode curr = dummy;
+        
+        while (l1 != null && l2 != null){
+            if (l1.val < l2.val){
+                curr.next = l1;
+                l1 = l1.next;
+            }
+            else {
+                curr.next = l2;
+                l2 = l2.next;
+            }
+            curr = curr.next;
+        }
+        
+        curr.next = l1 == null ? l2 : l1;
+        
+        return dummy.next;
+        
+    }
+}
+
+
+
+4- Merge K Sorted Lists
+
+
+
+
+
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int i = 0; i < lists.length; i++){
+            ListNode curr = lists[i];
+            while(curr != null){
+                minHeap.add(curr.val);
+                curr = curr.next;
+            }
+        }
+        ListNode head = null;
+        
+        if (!minHeap.isEmpty()){
+            head = new ListNode(minHeap.poll());
+        }
+        
+        ListNode curr = head;
+        while (!minHeap.isEmpty()){
+            ListNode next = new ListNode(minHeap.poll());
+            curr.next = next;
+            curr = curr.next;
+        }
+        return head;
+        
+    }
+// class Solution {
+//     public ListNode mergeKLists(ListNode[] lists) {
+//         if (lists == null || lists.length == 0) return null;
+//         if (lists.length == 1) return lists[0];
+//         List<ListNode> nodes = new ArrayList<>(Arrays.asList(lists));
+//         while(nodes.size() != 1) {
+//             ListNode l1 = nodes.get(0);
+//             ListNode l2 = nodes.get(1);
+//             nodes.remove(0);
+//             nodes.remove(0);
+//             nodes.add(mergeTwoLists(l1, l2));
+//         }
+//         return nodes.get(0);
+        
+        
+//     }
+    
+    
+//     public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+//         ListNode prehead = new ListNode(-1);
+//         ListNode prev = prehead;
+        
+//         while (l1 != null && l2 != null) {
+//             if (l1.val <= l2.val) {
+//                 prev.next = l1;
+//                 l1 = l1.next;
+//             } 
+//             else {
+//                 prev.next = l2;
+//                 l2 = l2.next;
+//             }
+//             prev = prev.next;
+//         }
+
+//         prev.next = l1 == null ? l2 : l1;
+
+//         return prehead.next;
+//     }
+}
+
+
+
+
+
+
+
+
+
+5- Remove Nth Node From End Of List
+
+
+
+
+
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+public class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        
+        ListNode behind = dummy;
+        ListNode ahead = dummy;
+        
+        for (int i = 0; i < n; i++){
+            ahead = ahead.next;
+        }
+        
+        while (ahead.next != null){
+            ahead = ahead.next;
+            behind = behind.next;
+        }
+        
+        behind.next = behind.next.next;
+       
+        return dummy.next;
+    }
+    
+}
+

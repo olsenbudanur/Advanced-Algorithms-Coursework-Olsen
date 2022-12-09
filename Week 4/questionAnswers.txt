@@ -1,0 +1,189 @@
+1- Valid Parentheses
+
+
+
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        HashMap<Character, Character> map = new HashMap<>();
+        map.put(')', '(');
+        map.put('}', '{');
+        map.put(']', '[');
+            
+        for (char c : s.toCharArray()){
+            if (map.containsKey(c)){
+                if (stack.isEmpty()) return false;
+                char match = stack.pop();
+                if (match != map.get(c)){
+                    return false;
+                }
+            }
+            else {
+                stack.add(c);
+            }
+        }
+        
+        return stack.isEmpty();
+    }
+}
+
+2- Valid Palindrome
+
+
+class Solution {
+    public boolean isPalindrome(String s) {
+        int p = 0;
+        int q = s.length() - 1;
+
+        while(p <= q) {
+            char c = s.charAt(p);
+            char cb = s.charAt(q);
+
+            if(!Character.isLetterOrDigit(c)) {
+                p++;
+                continue;
+            }
+
+            if(!Character.isLetterOrDigit(cb)) {
+                q--;
+                continue;
+            }
+
+            if(Character.toLowerCase(cb) != Character.toLowerCase(c)) return false;
+            p++;
+            q--;
+        }
+        return true;
+        
+        
+    }
+}
+
+
+
+3- Longest Palindromic Substring
+
+
+
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() < 1) return "";
+        if (s.length() < 2) return s;
+        int[] max = {-1, -1, -1};
+        
+        for (int i = 0; i < s.length(); i++){
+            int[] odd = expand(s, i, i);
+            int[] even = expand(s, i, i + 1);
+            int[] currMax = odd[0] > even[0] ? odd : even;
+                
+            if (currMax[0] > max[0]){
+                max = currMax;
+            }
+        }
+        
+        return s.substring(max[1], max[2] + 1);
+        
+    }
+    
+    public int[] expand(String s, int left, int right){
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)){
+            left--;
+            right++;
+        }
+        left++;
+        right--;
+        
+        return new int[] {right - left + 1, left, right};
+    }
+    
+}
+
+
+
+4- Palindromic Substrings
+
+
+
+
+class Solution {
+    public int countSubstrings(String s) {
+        //
+        // Primative types are passed as copies
+        // So just pass count as an array lmao.
+        int[] count = {0};
+        
+        for (int i = 0; i < s.length(); i++){
+            expand(s, i, i, count);
+            expand(s, i, i + 1, count);
+        }
+        
+        return count[0];
+    }
+    
+    public void expand(String s, int left, int right, int[] count){
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)){
+            left--;
+            right++;
+            count[0]++;
+        }
+    }
+    
+}
+
+5- Encode and Decode Strings (Leetcode Premium)
+
+
+
+
+public class Codec {
+  // Encodes a list of strings to a single string.
+  public String encode(List<String> strs) {
+      if (strs.size() == 0) return "";
+      
+      StringBuilder builder = new StringBuilder();
+      
+      for (String s : strs){
+          builder.append(s.length());
+          builder.append('$');
+          builder.append(s);
+      }
+      return builder.toString();
+      
+  }
+
+  // Decodes a single string to a list of strings.
+  public List<String> decode(String s) {
+      List<String> answ = new ArrayList<>();
+      if (s.equals("")) return answ;
+      
+      int idx = 0;
+      
+      while (idx < s.length()){
+          StringBuilder builder = new StringBuilder();
+          char curr = s.charAt(idx);
+          
+          while (curr != '$'){
+              builder.append(curr);
+              idx++;
+              curr = s.charAt(idx);
+          }
+          idx++;
+          
+          int size = Integer.valueOf(builder.toString());
+          
+          StringBuilder builder2 = new StringBuilder();
+          for (int i = 0; i < size; i++){
+              curr = s.charAt(idx);
+              builder2.append(curr);
+              idx++;
+          }
+          answ.add(builder2.toString());
+          
+          
+      }
+      return answ;
+      
+  }
+}
+
+

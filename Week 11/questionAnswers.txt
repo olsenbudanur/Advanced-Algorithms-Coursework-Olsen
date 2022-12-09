@@ -1,0 +1,312 @@
+1- Alien Dictionary (Leetcode Premium)
+
+
+
+
+
+class Solution {
+    
+    private Map<Character, List<Character>> reverseAdjList = new HashMap<>();
+    private Map<Character, Boolean> seen = new HashMap<>();
+    private StringBuilder output = new StringBuilder();
+    
+    public String alienOrder(String[] words) {
+        
+        // Step 0: Put all unique letters into reverseAdjList as keys.
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                reverseAdjList.putIfAbsent(c, new ArrayList<>());
+            }
+        }
+        
+        // Step 1: Find all edges and add reverse edges to reverseAdjList.
+        for (int i = 0; i < words.length - 1; i++) {
+            String word1 = words[i];
+            String word2 = words[i + 1];
+            // Check that word2 is not a prefix of word1.
+            if (word1.length() > word2.length() && word1.startsWith(word2)) {
+                return "";
+            }
+            // Find the first non match and insert the corresponding relation.
+            for (int j = 0; j < Math.min(word1.length(), word2.length()); j++) {
+                if (word1.charAt(j) != word2.charAt(j)) {
+                    reverseAdjList.get(word2.charAt(j)).add(word1.charAt(j));
+                    break;
+                }
+            }
+        }
+        
+        // Step 2: DFS to build up the output list.
+        for (Character c : reverseAdjList.keySet()) {
+            boolean result = dfs(c);
+            if (!result) return "";
+        }
+        
+        return output.toString();
+    }
+    
+    // Return true iff no cycles detected.
+    private boolean dfs(Character c) {
+        if (seen.containsKey(c)) {
+            return seen.get(c); // If this node was grey (false), a cycle was detected.
+        }
+        seen.put(c, false);
+        for (Character next : reverseAdjList.get(c)) {
+            boolean result = dfs(next);
+            if (!result) return false;
+        }
+        seen.put(c, true);
+        output.append(c);
+        return true;
+    }    
+}
+
+
+
+
+2- Graph Valid Tree (Leetcode Premium)
+
+
+
+
+
+
+class Solution {
+    HashMap<Integer, ArrayList<Integer>> adj;
+    HashSet<Integer> clear = new HashSet<>();
+    int count = 0;
+    public boolean validTree(int n, int[][] edges) {
+        if (n == 1) return true;
+        
+        adj = new HashMap<>();
+        
+        //
+        // Create an adj matrix.
+        for (int i = 0; i < edges.length; i++){
+            
+            ArrayList<Integer> neigh = new ArrayList<>();
+            ArrayList<Integer> cur = adj.getOrDefault(edges[i][0], neigh);
+            cur.add(edges[i][1]);
+            adj.put(edges[i][0], cur);
+
+            ArrayList<Integer> neigh2 = new ArrayList<>();
+            ArrayList<Integer> cur2 = adj.getOrDefault(edges[i][1], neigh2);
+            cur2.add(edges[i][0]);
+            adj.put(edges[i][1], cur2);
+            
+        }
+        
+        //
+        // Run DFS on all nodes.
+        for (int num : adj.keySet()){
+            HashSet<Integer> visited = new HashSet<>();
+            if (!dfs(num, -1, visited)){
+                return false;
+            }
+            break;
+        }
+        if(count != n) return false;
+        
+        //
+        // If no cycle found on dfs, return true.
+        return true;
+    }
+    
+    
+    public boolean dfs(int curr, int prior, HashSet<Integer> visited){
+        if (!adj.containsKey(curr)) return false;
+        if (visited.contains(curr)) return false;
+        if (clear.contains(curr)) return true;
+        count++;
+        ArrayList<Integer> list = adj.get(curr);
+        
+        for (int i = 0; i < list.size(); i++){
+            int iter = list.get(i);
+            if (iter == prior) continue;
+            HashSet<Integer> visited2 = new HashSet<>(visited);
+            visited2.add(curr);
+            if (!dfs(iter, curr, visited2)){
+                return false;
+            } 
+        }
+        
+        clear.add(curr);
+        
+        return true;
+        
+        
+    }
+    
+    
+}
+
+
+
+
+3- "Number of Connected Components in an 
+Undirected Graph (Leetcode Premium)"
+
+
+
+
+
+
+
+class Solution {
+    HashMap<Integer, ArrayList<Integer>> adj = new HashMap<>();
+    HashSet<Integer> visited = new HashSet<>();
+    int components = 0; 
+    
+    public int countComponents(int n, int[][] edges) {
+        
+        //
+        // Build adjecency matrix.
+        for (int i = 0; i < edges.length; i++){
+            int a = edges[i][0];
+            int b = edges[i][1];
+            
+            ArrayList<Integer> aNeigh = adj.getOrDefault(a, new ArrayList<Integer>());
+            ArrayList<Integer> bNeigh = adj.getOrDefault(b, new ArrayList<Integer>());
+            
+            aNeigh.add(b);
+            bNeigh.add(a);
+            
+            adj.put(a, aNeigh);
+            adj.put(b, bNeigh);
+        }
+        
+        
+        
+        for (int curr : adj.keySet()){
+            components += dfs(curr);
+        }
+        
+        return components + (n - visited.size());
+        
+    }
+    
+    
+    public int dfs(int num){
+        if (visited.contains(num)) return 0;
+        visited.add(num);
+        if (!adj.containsKey(num)) return 0;
+        
+        ArrayList<Integer> neigh = adj.get(num);
+        
+        
+        for (int c : neigh){
+            dfs(c);
+        }
+        
+        return 1;
+    }
+    
+}
+
+
+
+
+4- Insert Interval
+
+
+
+
+
+class Solution {
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        ArrayList<int[]> answ = new ArrayList<>();
+        boolean inserted = false;
+        
+        for (int i = 0; i < intervals.length; i++){
+            int[] curr = intervals[i];
+            if (inserted){
+                answ.add(curr);
+                continue;
+            }
+            
+            //
+            // If new interval ends before curr starts
+            if (newInterval[1] < curr[0]){
+                answ.add(newInterval);
+                inserted = true;
+            }
+            // //
+            // If new interval starts after curr ends
+            else if (newInterval[0] > curr[1]) {
+                //
+            }
+            //
+            // If there is an overlap
+            else {
+                newInterval[0] = Math.min(newInterval[0], curr[0]);
+                newInterval[1] = Math.max(newInterval[1], curr[1]);
+                continue;
+            }
+            answ.add(curr);
+        }
+        
+        if (!inserted) answ.add(newInterval);
+        
+        int[][] answ2 = new int[answ.size()][2];
+        for (int i = 0; i < answ.size(); i++){
+            answ2[i][0] = answ.get(i)[0];
+            answ2[i][1] = answ.get(i)[1];
+        }
+        
+        return answ2;
+    }
+}
+
+
+
+
+
+5- Merge Intervals
+
+
+
+
+
+
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        //
+        // Deals with edge case.
+        if (intervals.length == 1){
+            return intervals;
+        }
+        
+        //
+        // Sort intervals by the first number.
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        ArrayList<int[]> answ = new ArrayList<>();
+        
+        answ.add(intervals[0]);
+        
+        for (int i = 1; i < intervals.length; i++){
+            int[] curr = intervals[i];
+            int[] prev = answ.get(answ.size() - 1);
+            //
+            // If curr starts after prev ends,
+            // just add it.
+            if (curr[0] > prev[1]){
+                answ.add(curr);
+            }
+            //
+            // Else if there is a conflict.
+            else {
+                prev[0] = Math.min(prev[0], curr[0]);
+                prev[1] = Math.max(prev[1], curr[1]);
+            }
+        }
+        
+        
+        
+        return answ.toArray(new int[0][0]);
+    }
+}
+
+
+
+

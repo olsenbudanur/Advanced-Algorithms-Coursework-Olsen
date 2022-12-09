@@ -1,0 +1,320 @@
+1- Reorder List
+
+
+
+// class Solution {
+//     public void reorderList(ListNode head) {
+        
+     
+//         ListNode curr = head;
+//         ListNode[]  a = new ListNode[100000];  //To compensate space, we can also use "Deque"
+//         int length = 0, counter = 0 , i = 0 ,j = 0;
+        
+        
+//        if(head==null)          // Edge case: check if linked list is empty .
+//             return;
+        
+//        while(head!=null)           // Add the node references to array named 'a' and also note length
+//         {   
+//             a[length++] = head;
+//             head= head.next; 
+//         }
+
+
+//         i=1;                              // i  : pointer to first index
+//         j=length-1;                       // j : pointer to last index
+        
+//         while(i<=j)
+//         {
+          
+//            if(counter%2==0)                      // For even or First iteration  : decrement j
+//            {
+//                curr.next = a[j];
+//                curr = curr.next;
+//                j--;
+//            }
+//            else                                  // For odd or second iteration : increment i
+//            {   
+//                curr.next = a[i];
+//                curr = curr.next;
+//                i++; 
+//            }
+            
+//             counter++;                           // The use of counter is to simulate even / odd situation
+//         }
+        
+//       curr.next = null;
+        
+//     }
+    
+  
+// }
+class Solution {
+    public void reorderList(ListNode head) {
+        //
+        // find the middle of linked list [Problem 876]
+        // in 1->2->3->4->5->6 find 4 
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+          slow = slow.next;
+          fast = fast.next.next;
+        }
+        
+        //
+        // reverse the second part of the list [Problem 206]
+        // convert 1->2->3->4->5->6 into 1->2->3->4 and 6->5->4
+        // reverse the second half in-place
+        ListNode prev = null, curr = slow, tmp;
+        while (curr != null) {
+          tmp = curr.next;
+
+          curr.next = prev;
+          prev = curr;
+          curr = tmp;
+        }
+        
+        // merge two sorted linked lists [Problem 21]
+        // merge 1->2->3->4 and 6->5->4 into 1->6->2->5->3->4
+        ListNode first = head, second = prev;
+        while (second.next != null) {
+          tmp = first.next;
+          first.next = second;
+          first = tmp;
+
+          tmp = second.next;
+          second.next = first;
+          second = tmp;
+        }
+        
+    }
+}
+
+
+2- Merge K Sorted Lists
+
+
+
+
+
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int i = 0; i < lists.length; i++){
+            ListNode curr = lists[i];
+            while(curr != null){
+                minHeap.add(curr.val);
+                curr = curr.next;
+            }
+        }
+        ListNode head = null;
+        
+        if (!minHeap.isEmpty()){
+            head = new ListNode(minHeap.poll());
+        }
+        
+        ListNode curr = head;
+        while (!minHeap.isEmpty()){
+            ListNode next = new ListNode(minHeap.poll());
+            curr.next = next;
+            curr = curr.next;
+        }
+        return head;
+        
+    }
+// class Solution {
+//     public ListNode mergeKLists(ListNode[] lists) {
+//         if (lists == null || lists.length == 0) return null;
+//         if (lists.length == 1) return lists[0];
+//         List<ListNode> nodes = new ArrayList<>(Arrays.asList(lists));
+//         while(nodes.size() != 1) {
+//             ListNode l1 = nodes.get(0);
+//             ListNode l2 = nodes.get(1);
+//             nodes.remove(0);
+//             nodes.remove(0);
+//             nodes.add(mergeTwoLists(l1, l2));
+//         }
+//         return nodes.get(0);
+        
+        
+//     }
+    
+    
+//     public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+//         ListNode prehead = new ListNode(-1);
+//         ListNode prev = prehead;
+        
+//         while (l1 != null && l2 != null) {
+//             if (l1.val <= l2.val) {
+//                 prev.next = l1;
+//                 l1 = l1.next;
+//             } 
+//             else {
+//                 prev.next = l2;
+//                 l2 = l2.next;
+//             }
+//             prev = prev.next;
+//         }
+
+//         prev.next = l1 == null ? l2 : l1;
+
+//         return prehead.next;
+//     }
+}
+
+
+
+
+3- Top K Frequent Elements
+
+
+
+
+
+
+
+
+
+
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        
+        
+        // O(1) time
+        if (k == nums.length) {
+            return nums;
+        }
+        
+        // 1. build hash map : character and how often it appears
+        // O(N) time
+        Map<Integer, Integer> count = new HashMap();
+        for (int n: nums) {
+          count.put(n, count.getOrDefault(n, 0) + 1);
+        }
+
+        // init heap 'the less frequent element first'
+        Comparator<Integer> co = new Comparator<>()
+        {
+            public int compare(Integer n1, Integer n2){
+                if (count.get(n1) > count.get(n2)){
+                    return 1;
+                }
+                return -1;
+            }
+        };
+        Queue<Integer> heap = new PriorityQueue<>(co);
+            // (n1, n2) -> count.get(n1) - count.get(n2));
+
+        // 2. keep k top frequent elements in the heap
+        // O(N log k) < O(N log N) time
+        for (int n: count.keySet()) {
+          heap.add(n);
+          if (heap.size() > k) heap.poll();    
+        }
+
+        // 3. build an output array
+        // O(k log k) time
+        int[] top = new int[k];
+        for(int i = k - 1; i >= 0; --i) {
+            top[i] = heap.poll();
+        }
+        return top;
+    }
+}
+
+
+
+
+4- Find Median from Data Stream
+
+
+
+
+
+
+
+
+class MedianFinder {
+    Queue<Integer> minHeap;
+    Queue<Integer> maxHeap;
+    boolean even;
+    
+    public MedianFinder() {
+        minHeap = new PriorityQueue<>();
+        maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        even = true;
+    }
+    
+    public void addNum(int num) {
+        if (even){
+            minHeap.offer(num);
+            maxHeap.offer(minHeap.poll());
+        }
+        else {
+            maxHeap.offer(num);
+            minHeap.offer(maxHeap.poll());
+        }
+        even = !even;
+    }
+    
+    public double findMedian() {
+        if (maxHeap.size() == 0){
+            return -1;
+        }
+        else if (even){
+            return (minHeap.peek() + maxHeap.peek()) / 2.0;
+        }
+        else {
+            return maxHeap.peek();
+        }
+    }
+}
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
+
+
+
+
+5- Climbing Stairs
+
+
+
+
+
+
+
+class Solution {
+    public int climbStairs(int n) {
+        int[] ways = new int[n];
+        ways[0] = 1;
+        ways[1] = 2;
+        
+        for (int i = 2; i < n; i++){
+            ways[i] = ways[i - 1] + ways[i - 2];
+        }
+        
+        return ways[n - 1];
+    }
+}
+
+
+
+
+
+

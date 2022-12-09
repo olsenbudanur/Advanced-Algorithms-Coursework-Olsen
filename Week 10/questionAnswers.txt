@@ -1,0 +1,268 @@
+1- Clone Graph
+
+
+
+
+
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List<Node> neighbors;
+    public Node() {
+        val = 0;
+        neighbors = new ArrayList<Node>();
+    }
+    public Node(int _val) {
+        val = _val;
+        neighbors = new ArrayList<Node>();
+    }
+    public Node(int _val, ArrayList<Node> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+}
+*/
+
+class Solution {
+    HashMap <Node, Node> visited = new HashMap <>();
+    
+    public Node cloneGraph(Node node) {
+        Node newHead = helper(node);
+        return newHead;
+    }
+    
+    public Node helper(Node node){
+        if (node == null) return null;
+        if (visited.containsKey(node)){
+            return visited.get(node);
+        }
+        
+        Node newHead = new Node(node.val, new ArrayList());
+        visited.put(node, newHead);
+        for (Node neighbor : node.neighbors){
+            Node newNeigh = helper(neighbor);
+            newHead.neighbors.add(newNeigh);
+        }
+        
+        
+        return newHead;
+    }
+    
+    
+    
+
+}
+
+
+2- Course Schedule
+
+
+
+
+
+class Solution {
+    
+    HashMap<Integer, ArrayList<Integer>> adj = new HashMap<>();
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        for (int i = 0; i < prerequisites.length; i++){
+            int prereq = prerequisites[i][1];
+            int take = prerequisites[i][0];
+            ArrayList<Integer> neigh = adj.getOrDefault(prereq, new ArrayList<>());
+            neigh.add(take);
+            adj.put(prereq, neigh);
+        }
+        
+        HashSet<Integer> currVisited = new HashSet<>();
+        for (int key : adj.keySet()){
+            if (!dfs(key, currVisited)) return false;
+        }
+        
+        return true;
+    }
+    
+    public boolean dfs(int curr, HashSet<Integer> visited){
+        if (visited.contains(curr)) return false;
+        if (!adj.containsKey(curr) || adj.get(curr).size() == 0) return true;
+        visited.add(curr);
+        ArrayList<Integer> neighs = adj.getOrDefault(curr, new ArrayList<>());
+        for (int neigh : neighs){
+            if (!dfs(neigh, visited)) return false;
+        }
+        visited.remove(curr);
+        adj.put(curr, new ArrayList<>());
+        return true;
+    }
+    
+    
+    
+}
+
+
+
+3- Pacific Atlantic Water Flow
+
+
+
+
+
+
+
+class Solution {
+    int ROW;
+    int COL;
+    int[][] heights;
+    HashSet<String> visited = new HashSet<>();
+    
+    public List<List<Integer>> pacificAtlantic(int[][] heights) {
+        this.ROW = heights.length;
+        this.COL = heights[0].length;
+        this.heights = heights;
+        
+        boolean[][] pacBound = new boolean[ROW][COL];
+        boolean[][] atlBound = new boolean[ROW][COL];
+        
+        //
+        // Fill base cases of these arrays.
+        for (int i = 0; i < COL; i++){
+            helper(0, i, -1, pacBound);
+            helper(ROW-1, i, -1, atlBound);
+        }
+        
+        for (int i = 0; i < ROW; i++){
+            helper(i, 0, -1, pacBound);
+            helper(i, COL - 1, -1, atlBound);
+        }
+        
+        
+        
+        // TODO
+        
+        //
+        // Add the elements that exist in both to the answer.
+        List<List<Integer>> answ = new ArrayList<>();
+        for (int i = 0; i < ROW; i++){
+            for (int j = 0; j < COL; j++){
+                if (pacBound[i][j] && atlBound[i][j]){
+                    List<Integer> toup = new ArrayList<>();
+                    toup.add(i);
+                    toup.add(j);
+                    answ.add(toup);
+                }
+            }
+        }
+        
+        return answ;
+        
+    }
+    
+    
+    public void helper(int i, int j, int prev, boolean[][] ocean){
+        //
+        // If out of bounds, return.
+        if (i < 0 || j < 0 || i >= ROW || j >= COL) return;
+        
+        //
+        // If this value is less than the prior number, return.
+        int curr = heights[i][j];
+        if (curr < prev) return;
+        
+        
+        ocean[i][j] = true;
+        
+        if (i - 1 >= 0 && !ocean[i-1][j]) helper(i - 1, j, heights[i][j], ocean);
+        if (i + 1 < ROW && !ocean[i+1][j]) helper(i + 1, j, heights[i][j], ocean);
+        if (j - 1 >= 0 && !ocean[i][j - 1]) helper(i, j - 1, heights[i][j], ocean);
+        if (j + 1 < COL && !ocean[i][j + 1]) helper(i, j + 1, heights[i][j], ocean);
+        
+        
+    }
+    
+
+    
+ 
+}
+
+
+
+
+4- Number of Islands
+
+
+
+
+
+
+class Solution {
+    public int numIslands(char[][] grid) {
+        int num = 0;
+        for (int i = 0; i < grid.length; i++){
+            for (int j = 0; j < grid[0].length; j++){
+                if (grid[i][j] == '1'){
+                    sinker(grid, i, j);
+                    num++;
+                }
+            }
+        }
+        return num;
+    }
+    
+    public void sinker(char[][] grid, int i, int j){
+        if (i >= 0 && j >= 0 && i < grid.length && j < grid[0].length
+           && grid[i][j] == '1'){
+            grid[i][j] = '0';
+            sinker(grid, i, j + 1);
+            sinker(grid, i, j - 1);
+            sinker(grid, i - 1, j);
+            sinker(grid, i + 1, j);
+        }
+    }
+}
+
+
+
+
+
+5- Longest Consecutive Sequence
+
+
+
+
+
+
+class Solution {
+    HashSet<Integer> set = new HashSet<>();
+    public int longestConsecutive(int[] nums) {
+        for (int i = 0; i < nums.length; i++){
+            set.add(nums[i]);
+        }
+        
+        int max = 0;
+        
+        for (int element : set){
+            if (!set.contains(element - 1)){
+                int curr = 1;
+                max = Math.max(max, curr);
+                while (set.contains(element + 1)){
+                    curr++;
+                    element = element + 1;
+                    max = Math.max(max, curr);
+                }
+            }
+        }
+        return max;
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+}
+
+
+
+
+

@@ -1,0 +1,156 @@
+1- Maximum Product Subarray
+
+class Solution {
+    public int maxProduct(int[] nums) {
+        int answ = nums[0];
+        int max = 1;
+        int min = 1;
+        
+        
+        
+        for (int i = 0; i < nums.length; i++){
+            int temp = max;
+            max = Math.max(nums[i], Math.max(nums[i] * min, nums[i] * max));
+            min = Math.min(nums[i], Math.min(nums[i] * min, nums[i] * temp));
+
+            answ = Math.max(max, answ);
+            
+        }
+        return answ;
+        
+    }
+}
+
+2- Find Minimum in Rotated Sorted Array
+
+class Solution {
+    public int findMin(int[] nums) {        
+        
+        if (nums.length == 1){
+            return nums[0];
+        }
+        
+        int left = 0;
+        int right = nums.length - 1;
+        
+        if (nums[right] > nums[left]){
+            return nums[0];
+        }
+        
+        while (right >= left){
+            int mid = (left + right) / 2;
+            if (nums[mid] > nums[mid + 1]){
+                return nums[mid + 1];
+            }
+            
+            if (nums[mid - 1] > nums[mid]){
+                return nums[mid];
+            }
+            
+            if (nums[mid] > nums[left]){
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+            
+            
+        }
+        
+        
+        return -123123;
+        
+    }
+}
+
+3- Search in Rotated Sorted Array
+
+
+class Solution {
+    public int search(int[] nums, int target) {
+        int l = 0;
+        int r = nums.length - 1;
+        
+        
+        while (r >= l){
+            int m = (r + l) / 2;
+            if (nums[m] == target) return m;
+            
+            // Left is ordered
+            else if (nums[l] <= nums[m]){
+                if (nums[l] <= target && nums[m] > target) r = m - 1;
+                else l = m + 1;
+            }
+            // Right is ordered
+            else {
+                if (nums[r] >= target && nums[m] < target) l = m + 1;
+                else r = m - 1;
+            }
+        }
+        
+        return -1;
+    }
+}
+
+
+4- 3 Sum
+
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> answ = new ArrayList<>();
+        
+        for (int i = 0; i < nums.length; i++){
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            if (nums[i] > 0) break;
+            int left = i + 1;
+            int right = nums.length - 1;
+            
+            while (right > left){
+                int sum = nums[left] + nums[right] + nums[i];
+                if (sum == 0){
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    list.add(nums[i]);
+                    answ.add(list);
+                    left++;
+                    while (right > left && nums[left] == nums[left - 1]) left++;
+                    while (right > left && nums[right] == nums[right - 1]) right--;
+                }
+                else if (sum > 0){
+                    right--;
+                }
+                else {
+                    left++;
+                }
+            }
+            
+            
+        }
+        return answ;
+        
+    }
+}
+
+5- Container With Most Water
+
+class Solution {
+    public int maxArea(int[] height) {
+        int max = 0;
+        int l   = 0;
+        int r   = height.length - 1;
+        
+        while (r > l){
+            max = Math.max(max, Math.min(height[l], height[r]) * (r - l));
+            if (height[l] > height[r]){
+                r--;
+            }
+            else {
+                l++;
+            }
+        }
+        
+        return max;
+    }
+}

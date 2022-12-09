@@ -1,0 +1,211 @@
+1- Longest Substring Without Repeating Characters
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int left                        = 0;
+        int right                       = 0;
+        int max                         = 0;
+        
+        HashMap<Character, Integer> map = new HashMap<>();
+        
+        
+        while (right < s.length()){
+            char curr = s.charAt(right);
+            
+            if(map.containsKey(curr)){
+                left = Math.max(left, map.get(curr) + 1);
+            }
+            
+            map.put(curr, right);
+            
+            max = Math.max(max, right - left + 1);
+            right++;
+        }
+        
+        
+        return max;
+        
+        
+//         if (s.length() == 0) return 0;
+//         int max = 0;
+//         int currRun = 0;
+        
+//         HashMap<Character, Integer> map = new HashMap<>();
+        
+//         int idx = 0;
+        
+        
+//         while(idx < s.length()){
+//             char curr = s.charAt(idx);
+//             if (!map.containsKey(curr)){
+//                 map.put(curr, idx);
+//                 idx++;
+//                 currRun++;
+//             }
+//             else {
+//                 idx = map.get(curr) + 1;
+//                 currRun = 0;
+//                 map = new HashMap<>();
+//                 max = Math.max(currRun, max);
+//             }
+//             max = Math.max(currRun, max);
+//         }
+        
+//         return max;
+    }
+}
+
+2- Longest Repeating Character Replacement
+
+class Solution {
+    public int characterReplacement(String s, int k) {      
+        HashMap<Character, Integer> map = new HashMap<>();
+        int anchor                      = 0;
+        int maxOcc                      = 0;
+        int maxLen                      = 0;
+        
+        for (int i = 0; i < s.length(); i++){
+            char curr = s.charAt(i);
+            map.put(curr, map.getOrDefault(curr, 0) + 1);
+            maxOcc = Math.max(maxOcc, map.get(curr));
+            
+
+            if (i - anchor + 1 - maxOcc > k){
+                map.put(s.charAt(anchor), map.get(s.charAt(anchor)) - 1);
+                anchor++;
+            }
+            
+            maxLen = Math.max(maxLen, i - anchor + 1);
+        }
+        
+        return maxLen;
+        
+    }
+    
+    
+}
+
+
+
+
+3- Minimum Window Substring
+
+class Solution {
+    public String minWindow(String s, String t) {
+        if (s.length() == 0 || t.length() == 0) return "";
+        HashMap<Character, Integer> neededChars = new HashMap<>();
+        for (char c : t.toCharArray()){
+            neededChars.put(c, neededChars.getOrDefault(c, 0) + 1);
+        }
+        
+        //
+        // Init the vals
+        HashMap<Character, Integer> currChars = new HashMap<>();
+        
+        int anchor                            = 0;
+        int right                             = 0;
+        
+        int needed                            = neededChars.size();
+        int have                              = 0;
+        
+        int[] sol                             = {-1, 0, 0}; // Min length, left and right.
+        
+        
+        while (right < s.length()){
+            char c = s.charAt(right);
+            currChars.put(c, currChars.getOrDefault(c, 0) + 1);
+            
+            if (neededChars.containsKey(c) && neededChars.get(c).intValue() == currChars.get(c).intValue()){
+                have++;
+            }
+            
+            while (anchor <= right && have == needed){
+                if (sol[0] == -1 || right - anchor + 1 < sol[0]){
+                    sol[0] = right - anchor + 1;
+                    sol[1] = anchor;
+                    sol[2] = right;
+                }
+                char anchorC = s.charAt(anchor);
+                currChars.put(anchorC, currChars.get(anchorC) - 1);
+                anchor++;
+                if (neededChars.containsKey(anchorC) && currChars.get(anchorC) < neededChars.get(anchorC)){
+                    have--;
+                }
+            }
+            
+            right++;
+        } 
+        return sol[0] == -1 ? "" : s.substring(sol[1], sol[2] + 1);
+    }
+}
+
+4- Valid Anagram
+
+
+
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        String s1 = convert(s);
+        String s2 = convert(t);
+        return s1.equals(s2);
+        
+    }
+    
+    public String convert(String s){
+        int[] arr = new int[26];
+        
+        for (int i = 0; i < s.length(); i++){
+            char curr = s.charAt(i);
+            arr[curr - 'a']++;
+        }
+        
+        return Arrays.toString(arr);
+    }
+    
+    
+    
+}
+
+
+
+
+5- Group Anagrams
+
+
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        HashMap<String, List<String>> map = new HashMap<>();
+        
+        for (int i = 0; i < strs.length; i++){
+            String curr = strs[i];
+            String standard = standarize(curr);
+            if (map.containsKey(standard)){
+                List<String> list = map.get(standard);
+                list.add(curr);
+            }
+            else {
+                List<String> list = new ArrayList<>();
+                list.add(curr);
+                map.put(standard, list);
+            }
+        }
+        
+        List<List<String>> answ = new ArrayList<>();
+        
+        for (String key : map.keySet()){
+            answ.add(map.get(key));
+        }
+        return answ;
+        
+    }
+    
+    public String standarize(String a){
+        int[] arr = new int[26];
+        
+        for (char c : a.toCharArray()){
+            arr[c - 'a']++;
+        }
+        
+        return Arrays.toString(arr);
+    }
+}
+

@@ -1,0 +1,140 @@
+1- Two Sum:
+
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int[] solution = new int[2];
+        
+        for (int i = 0; i < nums.length; i++){
+            if (map.containsKey(target - nums[i])){
+                solution[0] = i;
+                solution[1] = map.get(target - nums[i]);
+            }
+            map.put(nums[i], i);
+        }
+        
+        return solution;
+    }
+}
+
+2- Best Time to Buy and Sell Stock
+
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        int min = prices[0];
+        int diff = 0;
+        for (int cur : prices){
+            min = Math.min(min, cur);
+            diff = Math.max(diff, cur - min); 
+        }
+        
+        return diff;
+    }
+}
+
+
+3- Contains Duplicate
+
+class Solution {
+    public boolean containsDuplicate(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        
+        for (int i = 0; i < nums.length; i++){
+            if (set.contains(nums[i])) return true;
+            set.add(nums[i]);
+        }
+        return false;
+        
+    }
+        
+}
+
+4- Product of Array Except Self
+
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int[] answ = new int[nums.length];
+        int[] L = new int[nums.length];
+        int[] R = new int[nums.length];
+        
+        L[0] = 1;
+        R[nums.length - 1] = 1;
+        
+        int j = nums.length - 2;
+        for (int i = 1; i < nums.length; i++){
+            L[i] = L[i - 1] * nums[i - 1];
+            R[j] = R[j + 1] * nums[j + 1];
+            
+            j--;
+        }
+        
+        for (int i = 0; i < nums.length; i++){
+            answ[i] = L[i] * R[i];
+        }
+        
+        
+        return answ;
+        
+//         // The length of the input array
+//         int length = nums.length;
+
+//         // The left and right arrays as described in the algorithm
+//         int[] L = new int[length];
+//         int[] R = new int[length];
+
+//         // Final answer array to be returned
+//         int[] answer = new int[length];
+
+//         // L[i] contains the product of all the elements to the left
+//         // Note: for the element at index '0', there are no elements to the left,
+//         // so L[0] would be 1
+//         L[0] = 1;
+//         for (int i = 1; i < length; i++) {
+
+//             // L[i - 1] already contains the product of elements to the left of 'i - 1'
+//             // Simply multiplying it with nums[i - 1] would give the product of all
+//             // elements to the left of index 'i'
+//             L[i] = nums[i - 1] * L[i - 1];
+//         }
+
+//         // R[i] contains the product of all the elements to the right
+//         // Note: for the element at index 'length - 1', there are no elements to the right,
+//         // so the R[length - 1] would be 1
+//         R[length - 1] = 1;
+//         for (int i = length - 2; i >= 0; i--) {
+
+//             // R[i + 1] already contains the product of elements to the right of 'i + 1'
+//             // Simply multiplying it with nums[i + 1] would give the product of all
+//             // elements to the right of index 'i'
+//             R[i] = nums[i + 1] * R[i + 1];
+//         }
+
+//         // Constructing the answer array
+//         for (int i = 0; i < length; i++) {
+//             // For the first element, R[i] would be product except self
+//             // For the last element of the array, product except self would be L[i]
+//             // Else, multiple product of all elements to the left and to the right
+//             answer[i] = L[i] * R[i];
+//         }
+
+//         return answer;
+    }
+}
+
+5- Maximum Subarray
+
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int curr = 0;
+        int max = nums[0];
+        
+        for (int i = 0; i < nums.length; i++){
+            curr += nums[i];
+            max = Math.max(max, curr);
+            if(curr < 0) curr = 0;
+        }
+        
+        return max;        
+    }
+}

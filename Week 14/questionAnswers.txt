@@ -1,0 +1,291 @@
+1- Binary Tree Maximum Path Sum
+
+
+
+
+
+
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution(object):
+    
+    def maxPathSum(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.ans = float("-inf")
+        
+        def dfs(node):
+            if node is None: 
+                return 0
+            
+            right = max(0, dfs(node.right))
+            left = max(0, dfs(node.left))
+
+            self.ans = max(self.ans, left + right + node.val)
+
+            return max(left, right) + node.val
+
+        dfs(root)
+        return self.ans
+
+
+
+2- Binary Tree Level Order Traversal
+
+
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+        
+        List<List<Integer>> answ = new ArrayList<>();
+        
+        while (!q.isEmpty()){
+            int len = q.size();
+            List<Integer> l = new ArrayList<>();
+            for (int i = 0; i < len; i++){
+                TreeNode curr = q.poll();
+                if (curr == null) continue;
+                l.add(curr.val);
+                q.add(curr.left);
+                q.add(curr.right);
+            }
+            if (l.size() > 0) answ.add(l);
+        }
+        
+        return answ;
+    }
+}
+
+
+
+3- Serialize and Deserialize Binary Tree
+
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+    int idx = 0;
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder builder = new StringBuilder();
+
+        serializeHelper(root, builder);
+
+        return builder.toString();
+    }
+
+
+    public void serializeHelper(TreeNode curr, StringBuilder builder){
+        if (curr == null){
+            builder.append("n,");
+            return;
+        }
+        builder.append(curr.val);
+        builder.append(',');
+        serializeHelper(curr.left, builder);
+        serializeHelper(curr.right, builder);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] tokens = data.split(",");
+
+        return deserializeHelper(tokens);
+    }
+
+    public TreeNode deserializeHelper(String[] tokens){
+        if (idx >= tokens.length) return null;
+        if (tokens[idx].equals("n")) {
+            idx++;
+            return null;
+        }
+        
+        TreeNode curr = new TreeNode(Integer.valueOf(tokens[idx]));
+        
+        idx++;
+
+        curr.left = deserializeHelper(tokens);
+        curr.right = deserializeHelper(tokens);
+        return curr;
+    }
+
+
+
+}
+
+
+
+
+
+4- Subtree of Another Tree
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    
+    
+    public boolean isSubtree(TreeNode s, TreeNode t) { // takes O(m x n)
+      if (s == null) {
+        return t == null;
+      }
+      return isSame(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+    }
+
+    private boolean isSame(TreeNode t1, TreeNode t2) { // takes O(n)
+      if (t1 == null && t2 == null) return true;
+      if (t1 == null || t2 == null) return false;
+
+      if (t1.val != t2.val) return false;
+      return isSame(t1.left, t2.left) && isSame(t1.right, t2.right);
+    }
+    
+    
+    
+//     public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+//         Queue<TreeNode> q = new LinkedList<>();
+//         q.add(root);
+        
+//         while (!q.isEmpty()){
+//             int num = q.size();
+//             for (int i = 0; i < num; i++){
+//                 TreeNode curr = q.poll();
+//                 if (helper(curr, subRoot)) return true;
+//                 if (curr != null){
+//                     q.add(curr.left);
+//                     q.add(curr.right);
+//                 }
+                
+//             }
+//         }
+        
+        
+//         return false;
+//     }
+    
+//     public boolean helper(TreeNode root, TreeNode subRoot){
+//         if (root == subRoot) return true;
+//         if (root == null || subRoot == null) return false;
+//         if (root.val != subRoot.val) return false;
+        
+//         return helper(root.left, subRoot.left) && helper(root.right, subRoot.right);
+        
+//     }
+    
+    
+    
+}
+
+
+
+
+
+5- Construct Binary Tree from Preorder and Inorder Traversal
+
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeaNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int preorderIndex;
+    Map<Integer, Integer> inorderIndexMap;
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        int preorderIndex = 0;
+        // build a hashmap to store value -> its index relations
+        inorderIndexMap = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++){
+            inorderIndexMap.put(inorder[i], i);
+        }
+        return arrayToTree(preorder, 0, preorder.length - 1);
+    }
+
+    private TreeNode arrayToTree(int[] preorder, int left, int right) {
+        // if there are no elements to construct the tree
+        if (left > right) return null;
+
+        // select the preorder_index element as the root and increment it
+        Integer rootVal = preorder[preorderIndex++];
+        TreeNode root = new TreeNode(rootVal);
+        Integer position = inorderIndexMap.get(rootVal);
+
+        // build left and right subtree
+        root.left = arrayToTree(preorder, left, position - 1);
+        root.right = arrayToTree(preorder, position + 1, right);
+        // excluding inorderIndexMap[rootValue] element because it's the root
+        return root;
+    }
+}
+
+
+
+
